@@ -21,13 +21,14 @@
 
 
 -- *******DISCORD USER ATTRIBUTES********* https://discordapp.com/developers/docs/resources/user#usernames-and-nicknames
--- FIELD           TYPE        DESCRIPTION                                                 REQUIRED OAUTH2 SCOPE
+-- FIELD            TYPE        DESCRIPTION                                                 REQUIRED OAUTH2 SCOPE
+---------------------------------------------------------------------------------------------------------------------
 -- id	            snowflake	the user's id	                                            identify
--- username	    string	    the user's username, not unique across the platform	        identify
+-- username	        string	    the user's username, not unique across the platform	        identify
 -- discriminator	string	    the user's 4-digit discord-tag	                            identify
 -- avatar	        ?string	    the user's avatar hash	                                    identify
--- bot?	        boolean	    whether the user belongs to an OAuth2 application	        identify
--- mfa_enabled?	boolean	    whether the user has two factor enabled on their account	identify
+-- bot?	            boolean	    whether the user belongs to an OAuth2 application	        identify
+-- mfa_enabled?	    boolean	    whether the user has two factor enabled on their account	identify
 -- locale?	        string	    the user's chosen language option	                        identify
 -- verified?	    boolean	    whether the email on this account has been verified	        email
 -- email?	        string	    the user's email	                                        email
@@ -36,8 +37,8 @@
 
 CREATE TABLE users(
     id INTEGER PRIMARY KEY,
-    discord_id INTEGER NOT NULL,
-    username TEXT NOT NULL,
+    user_id INTEGER NOT NULL,       --Discord user_id 
+    username TEXT NOT NULL,         --NOT UNIQUE
 
 
 );
@@ -51,11 +52,11 @@ CREATE TABLE birthdays(
 
 CREATE TABLE warnings(
     id INTEGER PRIMARY KEY,
-    user_id INTEGER NOT NULL,       -- Discord user id, e.g: 
+    user_id INTEGER NOT NULL,      
     username TEXT NOT NULL,
     mod_id INTEGER NOT NULL,
     mod_name TEXT NOT NULL,
-    warning_time TEXT NOT NULL, --ISO 8601 datetime string format: "YYYY-MM-DD HH:MM:SS.SSS"
+    warning_time TEXT NOT NULL,
     warning_message TEXT NOT NULL
 
-)
+);
