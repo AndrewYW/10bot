@@ -46,10 +46,7 @@ CREATE TABLE users(
 CREATE TABLE warnings(
     id INTEGER PRIMARY KEY,
     user_id INTEGER NOT NULL,      
-    username TEXT NOT NULL,
     mod_id INTEGER NOT NULL,
-    mod_name TEXT NOT NULL,
-    warning_time TEXT NOT NULL,
     warning_message TEXT NOT NULL
 
 );
