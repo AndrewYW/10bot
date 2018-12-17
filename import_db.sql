@@ -39,14 +39,7 @@ CREATE TABLE users(
     id INTEGER PRIMARY KEY,
     user_id INTEGER NOT NULL,       --Discord user_id 
     username TEXT NOT NULL,         --NOT UNIQUE
-
-
-);
-
-CREATE TABLE birthdays(
-    id INTEGER PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    birthdate TEXT NOT NULL, --ISO 8601 string format "YYYY-MM-DD HH:MM:SS.SSS"
+    birthdate TEXT NOT NULL          
 
 );
 
