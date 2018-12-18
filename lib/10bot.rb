@@ -1,9 +1,9 @@
 require 'discordrb'
 require 'yaml'
+require_relative 'helpers'
+CONFIG = YAML.load_file('lib/config.yaml')
 
-CONFIG = YAML.load_file('../config.yaml')
-
-bot = Discordrb::Commands::CommandBot.new token: 'B0T.T0KEN.here', prefix: '!'
+bot = Discordrb::Commands::CommandBot.new token: CONFIG['token'], prefix: '!'
 
 
 bot.command :user do |event|
@@ -47,6 +47,27 @@ bot.command :long do |event|
   event << 'Anyway, have a nice day.'
 
   # Here we don't have to worry about the return value because the `event << line` statement automatically returns nil.
+end
+
+bot.command :ping do |event|
+  event.respond 'Pong'
+end
+
+bot.command :dta do |event|
+  case rand(1..2)
+  when 1
+    "Tengu approves"
+  when 2
+    "Tengu does not approve"
+  end
+end
+
+bot.command :contents do |event|
+  event.respond event.message
+end
+
+bot.command :id do |event|
+  event.respond event.user.id
 end
 
 bot.run
