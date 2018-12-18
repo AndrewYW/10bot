@@ -37,7 +37,7 @@
 
 CREATE TABLE users(
     id INTEGER PRIMARY KEY,
-    user_id INTEGER NOT NULL,       --Discord user_id 
+    discord_id TEXT NOT NULL,       --Discord id 
     username TEXT NOT NULL,         --NOT UNIQUE
     birthdate TEXT NOT NULL          
 
@@ -45,8 +45,10 @@ CREATE TABLE users(
 
 CREATE TABLE warnings(
     id INTEGER PRIMARY KEY,
-    user_id INTEGER NOT NULL,      
-    mod_id INTEGER NOT NULL,
-    warning_message TEXT NOT NULL
+    user_id INTEGER NOT NULL,      --NOT DISCORD ID
+    mod_id INTEGER NOT NULL,       --ALSO NOT DISCORD ID
+    warning_message TEXT NOT NULL,
 
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (mod_id) REFERENCES users(id)
 );

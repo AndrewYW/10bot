@@ -10,22 +10,25 @@ ActiveRecord::Base.establish_connection(
 
 # Set up database tables and columns
 ActiveRecord::Schema.define do
-  create_table :users, do |t|
-    t.integer :user_id, null: false
-    t.string :username,
+  create_table :users, force: true do |t|
+    t.string :discord_id, null: false
+    t.string :username
     t.text :birthday
 
     t.timestamps
   end
 
 
-  create_table :warnings, do |t|
+  create_table :warnings, force: true do |t|
     t.integer :user_id, null: false
     t.integer :mod_id, null: false
     t.text :warning_message, null: false
 
     t.timestamps
   end
+
+  add_index :warnings, :user_id
+  add_index :warnings, :mod_id
 end
 
 # Set up model classes
@@ -33,9 +36,14 @@ class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 end
 class User < ApplicationRecord
+  validates :discord_id, presence: true, uniqueness: true
+
+  
   has_many :warnings,
     class_name: :Warning,
     foreign_key: :user_id
+
+  
 end
 class Warning < ApplicationRecord
   belongs_to :user,
