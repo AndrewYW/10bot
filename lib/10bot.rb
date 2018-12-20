@@ -1,6 +1,6 @@
 require 'discordrb'
 require 'yaml'
-# require_relative 'commands'
+
 require 'date'
 CONFIG = YAML.load_file('lib/test.yaml')
 
@@ -86,7 +86,8 @@ bot.command :bday do |event|
 end
 
 bot.command :id do |event|
-  event.respond event.user.id
+  event << event.user.id
+  event << event.message.id
 end
 
 bot.run

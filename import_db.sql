@@ -35,10 +35,13 @@
 -- flags	        integer	    the flags on a user's account	                            identify
 -- premium_type?	integer	    the type of Nitro subscription on a user's account      	identify
 
+PRAGMA foreign_keys = ON;
+
 CREATE TABLE users(
     id INTEGER PRIMARY KEY,
     discord_id TEXT NOT NULL,       --Discord id 
     username TEXT NOT NULL,         --NOT UNIQUE
+    discriminator INTEGER NOT NULL,
     birthdate TEXT NOT NULL,          
     moderator INTEGER NOT NULL,
     administrator INTEGER NOT NULL
@@ -53,3 +56,9 @@ CREATE TABLE warnings(
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (mod_id) REFERENCES users(id)
 );
+
+-- CREATE TABLE stars(
+--     id INTEGER PRIMARY KEY,
+--     user_id INTEGER NOT NULL,
+--     message_id INTEGER NOT NULL,    --Discord message id
+-- );
