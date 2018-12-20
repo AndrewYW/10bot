@@ -1,0 +1,3 @@
+class Warning < ModelBase
+
+end

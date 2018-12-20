@@ -37,12 +37,13 @@
 
 PRAGMA foreign_keys = ON;
 
-CREATE TABLE users(
+CREATE TABLE ten_users(
     id INTEGER PRIMARY KEY,
     discord_id TEXT NOT NULL,       --Discord id 
     username TEXT NOT NULL,         --NOT UNIQUE
-    discriminator INTEGER NOT NULL,
-    birthdate TEXT NOT NULL,          
+    discriminator INTEGER NOT NULL, --ALSO NOT UNIQUE
+    birthdate TEXT NOT NULL,   
+    twitch_url TEXT,       
     moderator INTEGER NOT NULL,
     administrator INTEGER NOT NULL
 );

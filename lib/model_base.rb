@@ -1,11 +1,13 @@
+require 'discordrb'
 require_relative 'users_db'
+require 'active_support/inflector'
 class ModelBase
 
   def self.table
     self.to_s.tableize
   end
 
-  def self.find(id)
+  def self.find_by_id(id)
     data = UsersDatabase.get_first_row(<<-SQL, id: id)
       SELECT
         *
