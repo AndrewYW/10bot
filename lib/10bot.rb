@@ -2,7 +2,7 @@ require 'discordrb'
 require 'yaml'
 # require_relative 'commands'
 require 'date'
-CONFIG = YAML.load_file('lib/config.yaml')
+CONFIG = YAML.load_file('lib/test.yaml')
 
 bot = Discordrb::Commands::CommandBot.new token: CONFIG['token'], prefix: '!'
 
@@ -51,11 +51,11 @@ bot.command :long do |event|
 end
 
 bot.command :ping do |event|
-  event.respond 'Pong'
+  event.respond 'Pong :smile:'
 end
 
 bot.command :dta do |event|
-  rand(2).zero? ? "Tengu approves" : "Tengu does not approve."
+  rand(2).zero? ? ":tenguapproved:" : ":tengudisapproved:"
 end
 
 bot.command :contents do |event|
@@ -69,12 +69,17 @@ end
 bot.command :bday do |event|
   author = event.message.mentions.first
 
-  bday = "12-19"
+  bday = "12-20"
   current_day = Date.today.strftime('%F')[5..-1]
 
   case bday == current_day
   when true
-    event.respond event.message.mentions
+    "yes"
+    mention_array = event.message.mentions
+    mention_array.each do |user|
+      member = event.server.member(user.id) #can return nil 
+      event << "Hello #{member.mention}"
+    end
   when false
     "nope"
   end
