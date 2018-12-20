@@ -1,6 +1,7 @@
 require 'discordrb'
 require 'yaml'
-require_relative 'helpers'
+# require_relative 'commands'
+require 'date'
 CONFIG = YAML.load_file('lib/config.yaml')
 
 bot = Discordrb::Commands::CommandBot.new token: CONFIG['token'], prefix: '!'
@@ -54,16 +55,29 @@ bot.command :ping do |event|
 end
 
 bot.command :dta do |event|
-  case rand(1..2)
-  when 1
-    "Tengu approves"
-  when 2
-    "Tengu does not approve"
-  end
+  rand(2).zero? ? "Tengu approves" : "Tengu does not approve."
 end
 
 bot.command :contents do |event|
   event.respond event.message
+end
+
+bot.command :addbday do |event|
+
+end
+
+bot.command :bday do |event|
+  author = event.message.mentions.first
+
+  bday = "12-19"
+  current_day = Date.today.strftime('%F')[5..-1]
+
+  case bday == current_day
+  when true
+    event.respond event.message.mentions
+  when false
+    "nope"
+  end
 end
 
 bot.command :id do |event|
