@@ -39,7 +39,7 @@ CREATE TABLE users(
     id INTEGER PRIMARY KEY,
     discord_id TEXT NOT NULL,       --Discord id 
     username TEXT NOT NULL,         --NOT UNIQUE
-    birthdate TEXT NOT NULL          
+    birthdate TEXT NOT NULL,          
     moderator INTEGER NOT NULL,
     administrator INTEGER NOT NULL
 );
