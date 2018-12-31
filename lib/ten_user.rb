@@ -29,6 +29,8 @@ class TenUser < ModelBase
   end
 
   def self.find_todays_birthdays(birthdate)
+    current_day = Date.today.strftime('%F')[5..-1]
+
     
   end
 

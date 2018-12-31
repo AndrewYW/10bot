@@ -1,11 +1,15 @@
 require 'discordrb'
 require 'yaml'
-
+require 'rufus-scheduler'
 require 'date'
+require_relative 'parseable'
+
 CONFIG = YAML.load_file('lib/test.yaml')
 
+scheduler = Rufus::Scheduler.new
 bot = Discordrb::Commands::CommandBot.new token: CONFIG['token'], prefix: '!'
 
+include Parseable
 
 bot.command :user do |event|
   # Commands send whatever is returned from the block to the channel. This allows for compact commands like this,
@@ -54,16 +58,29 @@ bot.command :ping do |event|
   event.respond 'Pong :smile:'
 end
 
-bot.command :dta do |event|
-  rand(2).zero? ? ":tenguapproved:" : ":tengudisapproved:"
-end
-
 bot.command :contents do |event|
   event.respond event.message
 end
 
-bot.command :addbday do |event|
 
+
+bot.command :dta do |event|
+  rand(2).zero? ? ":tenguapproved:" : ":tengudisapproved:"
+end
+
+bot.command :source do |event|
+  event.respond "https://github.com/AndrewYW/10bot/"
+end
+
+# TODO #
+
+#Display 
+bot.command :usercheck do |event|
+
+end
+
+bot.command :addbday do |event|
+  parse_birthday(event.content)
 end
 
 bot.command :bday do |event|
@@ -89,5 +106,18 @@ bot.command :id do |event|
   event << event.user.id
   event << event.message.id
 end
+
+bot.command :contents do |event|
+  arr = event.content.split(" ")
+  event.respond "#{arr[1][2..-2]}"
+end
+
+
+scheduler.every '2s' do
+  bot.send_message(CONFIG['response_channel'], 'testing scheduler')
+end
+
+
+scheduler.join
 
 bot.run
