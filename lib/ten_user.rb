@@ -19,7 +19,7 @@ class TenUser < ModelBase
     user_data = UsersDatabase.get_first_row(<<-SQL, discord_id: discord_id)
       SELECT
         ten_users.*
-      FROM
+      FROM  
         ten_users
       WHERE
         ten_users.discord_id = :discord_id
@@ -31,7 +31,7 @@ class TenUser < ModelBase
   def self.find_todays_birthdays(birthdate)
     current_day = Date.today.strftime('%F')[5..-1]
 
-    
+
   end
 
   def self.mods
@@ -90,6 +90,7 @@ class TenUser < ModelBase
 
   end
 
+  #add a warning to user
   def warn
 
   end
@@ -99,7 +100,7 @@ class TenUser < ModelBase
   end
 
   def as_discord_user
-
+    
   end
 
   def as_discord_member
