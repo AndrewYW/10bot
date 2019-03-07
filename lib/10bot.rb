@@ -67,7 +67,7 @@ end
 
 
 bot.command :dta do |event|
-  # rand(2).zero? ? "<@#{CONFIG['tenguapproved']}>" : "<@#{CONFIG['tengudisapproved']}>"
+  break unless event.server.id == CONFIG['TOH']
   rand(2).zero? ? bot.emoji(CONFIG['tenguapproved']) : bot.emoji(CONFIG['tengudisapproved'])
 end
 
@@ -84,7 +84,7 @@ end
 
 bot.command :addbday do |event|
 
-  message = event.respond(parse_birthday(event))
+  message = event.respond(parse_birthday(event).to_s)
 
   CROSS_MARK = "\u274c"
 
@@ -92,30 +92,13 @@ bot.command :addbday do |event|
 
   bot.add_await(:"delete_#{message.id}", Discordrb::Events::ReactionAddEvent, emoji: CROSS_MARK) do |reaction_event|
     next true unless reaction_event.message.id == message.id
-    message.delete
+    event.message.delete
   end
+  nil
 end
 
 bot.command :bday do |event|
-  author = event.message.mentions.first
-
-  bday = "03-07"
-  current_day = Date.today.strftime('%F')[5..-1]
-
-  case bday == current_day
-  when true
-    "yes"
-    mention_array = event.message.mentions
-    mention_array.each do |user|
-      event << event.server.member(user.id).roles.map{|role| [role.name, role.id]}
-      # member = event.server.member(user.id) #can return nil 
-      # event << "Hello #{member.mention}"
-    end
-
-    [author.name, author.discriminator, author.id.to_s]
-  when false
-    "nope"
-  end
+  event.message.mentions
 end
 
 bot.command :id do |event|
@@ -128,6 +111,10 @@ bot.command :contents do |event|
   event.respond "#{arr[1][2..-2]}"
 end
 
+bot.command :roles do |event|
+  member = event.server.member(event.message.mentions.first.id)
+  member.roles.map{|role| [role.name, role.id]}
+end
 
 scheduler.cron '5 0 * * *' do
   bot.send_message(CONFIG['response_channel'], 'testing scheduler')
