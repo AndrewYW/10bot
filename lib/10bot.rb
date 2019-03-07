@@ -2,7 +2,9 @@ require 'discordrb'
 require 'yaml'
 require 'rufus-scheduler'
 require 'date'
+
 require_relative 'parseable'
+require_relative 'ten_user'
 
 CONFIG = YAML.load_file('lib/test.yaml')
 
@@ -65,7 +67,8 @@ end
 
 
 bot.command :dta do |event|
-  rand(2).zero? ? ":tenguapproved:" : ":tengudisapproved:"
+  # rand(2).zero? ? "<@#{CONFIG['tenguapproved']}>" : "<@#{CONFIG['tengudisapproved']}>"
+  rand(2).zero? ? bot.emoji(CONFIG['tenguapproved']) : bot.emoji(CONFIG['tengudisapproved'])
 end
 
 bot.command :source do |event|
@@ -80,7 +83,17 @@ bot.command :usercheck do |event|
 end
 
 bot.command :addbday do |event|
-  parse_birthday(event.content)
+
+  message = event.respond(parse_birthday(event))
+
+  CROSS_MARK = "\u274c"
+
+  message.react CROSS_MARK
+
+  bot.add_await(:"delete_#{message.id}", Discordrb::Events::ReactionAddEvent, emoji: CROSS_MARK) do |reaction_event|
+    next true unless reaction_event.message.id == message.id
+    message.delete
+  end
 end
 
 bot.command :bday do |event|
@@ -116,14 +129,8 @@ bot.command :contents do |event|
 end
 
 
-# scheduler.every '2s' do
-# end
-
 scheduler.cron '5 0 * * *' do
   bot.send_message(CONFIG['response_channel'], 'testing scheduler')
 end
-
-
-# scheduler.join
 
 bot.run
