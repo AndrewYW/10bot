@@ -87,12 +87,14 @@ bot.command :addbday do |event|
   message = event.respond(parse_birthday(event).to_s)
 
   CROSS_MARK = "\u274c"
+  CHECK_MARK = "\u2705"
 
   message.react CROSS_MARK
+  message.react CHECK_MARK
 
-  bot.add_await(:"delete_#{message.id}", Discordrb::Events::ReactionAddEvent, emoji: CROSS_MARK) do |reaction_event|
+  bot.add_await(:"delete_#{message.id}", Discordrb::Events::ReactionAddEvent, emoji: CHECK_MARK) do |reaction_event|
     next true unless reaction_event.message.id == message.id
-    event.message.delete
+    message.delete
   end
   nil
 end
