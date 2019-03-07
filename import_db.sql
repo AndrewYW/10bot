@@ -34,21 +34,23 @@
 -- email?	        string	    the user's email	                                        email
 -- flags	        integer	    the flags on a user's account	                            identify
 -- premium_type?	integer	    the type of Nitro subscription on a user's account      	identify
+DROP TABLE IF EXISTS ten_users;
+DROP TABLE IF EXISTS warnings;
 
 PRAGMA foreign_keys = ON;
 
-CREATE TABLE ten_users(
+CREATE TABLE ten_users (
     id INTEGER PRIMARY KEY,
     discord_id TEXT NOT NULL,       --Discord id 
     username TEXT NOT NULL,         --NOT UNIQUE
-    discriminator INTEGER NOT NULL, --ALSO NOT UNIQUE
+    discriminator TEXT NOT NULL, --ALSO NOT UNIQUE
     birthdate TEXT NOT NULL,   
     twitch_url TEXT,       
     moderator INTEGER NOT NULL,
     administrator INTEGER NOT NULL
 );
 
-CREATE TABLE warnings(
+CREATE TABLE warnings (
     id INTEGER PRIMARY KEY,
     user_id INTEGER NOT NULL,      --NOT DISCORD ID
     mod_id INTEGER NOT NULL,       --ALSO NOT DISCORD ID

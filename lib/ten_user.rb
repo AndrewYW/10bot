@@ -1,6 +1,7 @@
 require_relative 'model_base'
 require_relative 'users_db'
-require_relative 'warning'
+require 'byebug'
+# require_relative 'warning'
 class TenUser < ModelBase
 
   def self.find_by_id(id)
@@ -15,6 +16,7 @@ class TenUser < ModelBase
 
     user_data.nil? ? nil : TenUser.new(user_data)
   end
+
   def self.find_by_discord_id(discord_id)
     user_data = UsersDatabase.get_first_row(<<-SQL, discord_id: discord_id)
       SELECT
@@ -28,10 +30,32 @@ class TenUser < ModelBase
     user_data.nil? ? nil : TenUser.new(user_data)
   end
 
-  def self.find_todays_birthdays(birthdate)
+  def self.find_todays_birthdays
     current_day = Date.today.strftime('%F')[5..-1]
 
+    user_data = UsersDatabase.execute(<<-SQL, current_day: current_day)
+      SELECT
+        ten_users.*
+      FROM
+        ten_users
+      WHERE
+        ten_users.birthdate = :current_day
+    SQL
 
+    user_data.map{|user| TenUser.new(user)}
+  end
+
+  def self.find_birthday(date)
+    user_data = UsersDatabase.execute(<<-SQL, date: date)
+      SELECT
+        ten_users.*
+      FROM
+        ten_users
+      WHERE
+        ten_users.birthdate = :date
+    SQL
+
+    user_data.map{|user| TenUser.new(user)}
   end
 
   def self.mods
@@ -52,7 +76,7 @@ class TenUser < ModelBase
   end
 
   attr_reader :id, :discord_id
-  attr_accessor: :username, :discriminator, :birthdate, :moderator, :administrator, :twitch_url
+  attr_accessor :username, :discriminator, :birthdate, :moderator, :administrator, :twitch_url
   def initialize(options={})
     @id, @discord_id, @username, @discriminator, @birthdate, @twitch_url, @moderator, @administrator = options.values_at(
       'id',

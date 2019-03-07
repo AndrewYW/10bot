@@ -4,8 +4,8 @@ require 'sqlite3'
 class UsersDatabase < SQLite3::Database
   include Singleton
 
-  SQL_FILE = File.join(File.dirname(__FILE__), '../import_db.sql')
-  DB_FILE = File.join(File.dirname(__FILE__), '../data/users.db')
+  SETUP_FILE = File.join(File.dirname(__FILE__), '../setup_db.sh')
+  DB_FILE = File.join(File.dirname(__FILE__), '../data/10bot.db')
 
   def self.open
     @database = SQLite3::Database.new(DB_FILE)
@@ -21,7 +21,7 @@ class UsersDatabase < SQLite3::Database
   def self.reset!
     commands = [
       "rm '#{DB_FILE}'",
-      "cat '#{SQL_FILE}' | sqlite3 '#{DB_FILE}'"
+      "`#{SETUP_FILE}`"
     ]
     
     commands.each {|command| `#{command}` }

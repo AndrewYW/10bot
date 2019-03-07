@@ -86,7 +86,7 @@ end
 bot.command :bday do |event|
   author = event.message.mentions.first
 
-  bday = "12-20"
+  bday = "03-07"
   current_day = Date.today.strftime('%F')[5..-1]
 
   case bday == current_day
@@ -94,9 +94,12 @@ bot.command :bday do |event|
     "yes"
     mention_array = event.message.mentions
     mention_array.each do |user|
-      member = event.server.member(user.id) #can return nil 
-      event << "Hello #{member.mention}"
+      event << event.server.member(user.id).roles.map{|role| [role.name, role.id]}
+      # member = event.server.member(user.id) #can return nil 
+      # event << "Hello #{member.mention}"
     end
+
+    [author.name, author.discriminator, author.id.to_s]
   when false
     "nope"
   end
@@ -113,11 +116,14 @@ bot.command :contents do |event|
 end
 
 
-scheduler.every '2s' do
+# scheduler.every '2s' do
+# end
+
+scheduler.cron '5 0 * * *' do
   bot.send_message(CONFIG['response_channel'], 'testing scheduler')
 end
 
 
-scheduler.join
+# scheduler.join
 
 bot.run

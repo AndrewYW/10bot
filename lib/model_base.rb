@@ -1,10 +1,12 @@
 require 'discordrb'
+require 'dry/inflector'
 require_relative 'users_db'
-require 'active_support/inflector'
+
 class ModelBase
 
   def self.table
-    self.to_s.tableize
+    inflector = Dry::Inflector.new
+    inflector.tableize(self.to_s)
   end
 
   def self.find_by_id(id)
@@ -19,6 +21,7 @@ class ModelBase
 
     data.nil? ? nil : self.new(data)
   end
+  
   def self.all
     data = UsersDatabase.execute(<<-SQL)
       SELECT

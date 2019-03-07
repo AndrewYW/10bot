@@ -17,6 +17,6 @@ module Parseable
 
   def create_10user(hash)
     member = bot.member(CONFIG['TOH'], hash['discord_id'])
-    TenUser.new(hash.merge()
+    TenUser.new(hash.merge())
   end
 end
