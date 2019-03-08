@@ -4,6 +4,7 @@ require 'rufus-scheduler'
 require 'date'
 
 require_relative 'parseable'
+require_relative 'searchable'
 require_relative 'ten_user'
 
 CONFIG = YAML.load_file('lib/test.yaml')
@@ -12,6 +13,7 @@ scheduler = Rufus::Scheduler.new
 bot = Discordrb::Commands::CommandBot.new token: CONFIG['token'], prefix: '!'
 
 include Parseable
+include Searchable
 
 bot.command :user do |event|
   # Commands send whatever is returned from the block to the channel. This allows for compact commands like this,
@@ -89,7 +91,6 @@ bot.command :addbday do |event|
   CROSS_MARK = "\u274c"
   CHECK_MARK = "\u2705"
 
-  message.react CROSS_MARK
   message.react CHECK_MARK
 
   bot.add_await(:"delete_#{message.id}", Discordrb::Events::ReactionAddEvent, emoji: CHECK_MARK) do |reaction_event|
@@ -100,7 +101,13 @@ bot.command :addbday do |event|
 end
 
 bot.command :bday do |event|
-  event.message.mentions
+  search_birthdays(event)
+  nil
+end
+
+bot.command :allbdays do |event|
+  search_all_birthdays(event)
+  nil
 end
 
 bot.command :id do |event|
@@ -108,7 +115,7 @@ bot.command :id do |event|
   event << event.message.id
 end
 
-bot.command :contents do |event|
+bot.command :contents do |event| 
   arr = event.content.split(" ")
   event.respond "#{arr[1][2..-2]}"
 end

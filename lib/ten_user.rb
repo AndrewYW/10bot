@@ -1,6 +1,5 @@
 require_relative 'model_base'
 require_relative 'users_db'
-require 'byebug'
 # require_relative 'warning'
 class TenUser < ModelBase
 
@@ -110,10 +109,6 @@ class TenUser < ModelBase
     self.administrator == 1
   end
 
-  def save
-
-  end
-
   #add a warning to user
   def warn
 
@@ -129,5 +124,9 @@ class TenUser < ModelBase
 
   def as_discord_member
 
+  end
+
+  def birthday_info
+    "#{username}##{discriminator} : #{birthdate}"
   end
 end
