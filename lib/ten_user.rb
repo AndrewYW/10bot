@@ -29,6 +29,19 @@ class TenUser < ModelBase
     user_data.nil? ? nil : TenUser.new(user_data)
   end
 
+  def self.find_all_birthdays
+    user_data = UsersDatabase.execute(<<-SQL)
+      SELECT
+        ten_users.*
+      FROM
+        ten_users
+      ORDER BY
+        ten_users.username
+    SQL
+
+    user_data.map{|user| TenUser.new(user)}
+  end
+
   def self.find_todays_birthdays
     current_day = Date.today.strftime('%F')[5..-1]
 
