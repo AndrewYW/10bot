@@ -1,3 +1,5 @@
 config.yaml
 test.yaml
 seed_db.sql
+
+.DS_Store

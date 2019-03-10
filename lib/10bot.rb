@@ -45,10 +45,20 @@ end
 
 
 bot.command :addbday do |event|
+  break unless event.server.id == CONFIG['TOH']
+  user_data = parse_birthday(event)
 
-  message = event.respond(parse_birthday(event).to_s)
+  if TenUser.exists?(user_data['discord_id'])
+    message = event.respond("User already added")
+  else
+    ten_user = TenUser.new(user_data)
+    if ten_user.create
+      message = event.respond(ten_user.mention(event) + " saved: #{ten_user.birthdate}")
+    else
+      message = event.respond("Birthday saving error")
+    end
+  end
 
-  CROSS_MARK = "\u274c"
   CHECK_MARK = "\u2705"
 
   message.react CHECK_MARK
@@ -57,6 +67,7 @@ bot.command :addbday do |event|
     next true unless reaction_event.message.id == message.id
     message.delete
   end
+  
   nil
 end
 
@@ -65,8 +76,13 @@ bot.command :bday do |event|
   nil
 end
 
-bot.command :list do |event|
+bot.command :listbdays do |event|
   search_all_birthdays(event)
+  nil
+end
+
+bot.command :list do |event|
+  search_all(event)
   nil
 end
 
@@ -77,6 +93,19 @@ end
 
 bot.command :usercheck do |event|
   #Display warnings for user
+  event << "Feature not implemented yet shut up"
+end
+
+bot.command :restart do |event|
+  break unless event.user.id == CONFIG['self_id']
+  bot.stop
+  sleep 3
+  bot.run
+end
+
+bot.command :stop do |event|
+  break unless event.user.id == CONFIG['self_id']
+  bot.stop
 end
 
 scheduler.cron '5 0 * * *' do

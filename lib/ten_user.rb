@@ -1,7 +1,12 @@
 require_relative 'model_base'
 require_relative 'users_db'
+require 'discordrb'
 # require_relative 'warning'
 class TenUser < ModelBase
+
+  def self.exists?(discord_id)
+    self.find_by_discord_id(discord_id).nil? ? false : true
+  end
 
   def self.find_by_id(id)
     user_data = UsersDatabase.get_first_row(<<-SQL, id: id)
@@ -53,7 +58,6 @@ class TenUser < ModelBase
       WHERE
         ten_users.birthdate = :current_day
     SQL
-
     user_data.map{|user| TenUser.new(user)}
   end
 
@@ -89,29 +93,38 @@ class TenUser < ModelBase
 
   attr_reader :id, :discord_id
   attr_accessor :username, :discriminator, :birthdate, :moderator, :administrator, :twitch_url
-  def initialize(options={})
-    @id, @discord_id, @username, @discriminator, @birthdate, @twitch_url, @moderator, @administrator = options.values_at(
-      'id',
-      'discord_id', 
-      'username',
-      'discriminator',
-      'birthdate',
-      'twitch_url',
-      'moderator',
-      'administrator'
-    )
+  def initialize(options)
+    keys = %w(discord_id username discriminator birthdate twitch_url moderator administrator)
+    @discord_id, @username, @discriminator, @birthdate, @twitch_url, @moderator, @administrator = options.values_at(*keys)
   end
 
   def attrs
     {
-      discord_id: discord_id,
-      username: username,
-      discriminator: discriminator,
-      birthdate: birthdate,
-      twitch_url: twitch_url,
-      moderator: moderator,
-      administrator: administrator
+      "discord_id" => self.discord_id,
+      "username" => self.username,
+      "discriminator" => self.discriminator,
+      "birthdate" => self.birthdate,
+      "twitch_url" => self.twitch_url,
+      "moderator" => self.moderator,
+      "administrator" => self.administrator,
     }
+  end
+
+  def create
+    instance_attrs = attrs
+    col_names = instance_attrs.keys.join(", ")
+    question_marks = (["?"] * instance_attrs.count).join(", ")
+    values = instance_attrs.values
+
+    UsersDatabase.execute(<<-SQL, *values)
+      INSERT INTO
+        ten_users(#{col_names})
+      VALUES
+        (#{question_marks})
+    SQL
+
+    @id = UsersDatabase.last_insert_row_id
+    self
   end
 
   def is_mod?
@@ -135,8 +148,12 @@ class TenUser < ModelBase
     
   end
 
-  def as_discord_member
+  def as_discord_member(event)
+    event.server.member(discord_id)
+  end
 
+  def mention(event)
+    as_discord_member(event).mention
   end
 
   def birthday_info

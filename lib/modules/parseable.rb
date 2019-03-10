@@ -14,12 +14,13 @@ module Parseable
       moderator = 0
       moderator = 1 if administrator == 1 or role_ids.include?(CONFIG['staff'])
 
-      { username: author.name, 
-        discriminator: author.discriminator, 
-        discord_id: author.id.to_s,
-        moderator: moderator,
-        administrator: administrator,
-        birthdate: birthdate,
+      { 
+        "discord_id" => author.id.to_s,
+        "username" => author.name, 
+        "discriminator" => author.discriminator, 
+        "birthdate" => birthdate,
+        "moderator" => moderator,
+        "administrator" => administrator,
       }
     end
   end

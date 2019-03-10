@@ -2,6 +2,12 @@ require_relative '../ten_user';
 
 module Searchable
 
+  def search_all(event)
+    TenUser.all.each do |user|
+      event << user.birthday_info
+    end
+  end
+
   def search_all_birthdays(event)
     TenUser.find_all_birthdays.each do |user|
       event << user.birthday_info unless event.server.member(user.discord_id).nil?
@@ -14,7 +20,7 @@ module Searchable
       if res.nil?
         event << user.mention + " not found"
       else
-        event << user.birthday_info
+        event << res.birthday_info
       end
     end
   end
