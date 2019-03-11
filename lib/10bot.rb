@@ -119,6 +119,26 @@ bot.command :listtoday do |event|
   nil
 end
 
+# PUGS
+
+bot.command :pugtime do |event|
+  category = event.server.create_channel("PUGS", 4)
+  category.position = 1
+
+  event.server.create_channel("pug-lobby", 2, { parent: category })
+  event.server.create_channel("TEAM-1", 2, { parent: category })
+  event.server.create_channel("TEAM-2", 2, { parent: category })
+
+  nil
+end
+
+bot.command :pugover do |event|
+  category = event.server.channels.find {|channel| channel.name == "PUGS"}
+  category.children.each{|channel| channel.delete}
+  category.delete
+  nil
+end
+
 bot.command :roles do |event|
   member = event.server.member(event.message.mentions.first.id)
   member.roles.map{|role| [role.name, role.id]}

@@ -60,6 +60,6 @@ module Searchable
   end
 
   def role_ids(event)
-    event.user.roles.map {|role| role.id}
+    event.server.member(event.user.id).roles.map {|role| role.id}
   end
 end
