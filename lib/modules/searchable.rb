@@ -31,15 +31,15 @@ module Searchable
     ten_users = TenUser.find_todays_birthdays(current_day)
 
     if ten_users
-      bot.send_message(CFG['response_channel'],"Today is: " + current_day)
-      bot.send_message(CFG['response_channel'],"**THERE ARE SOME BIRTHDAYS TODAY**")
+      bot.send_message(CFG['general'],"Today is: " + current_day)
+      bot.send_message(CFG['general'],"**THERE ARE SOME BIRTHDAYS TODAY**")
 
       ten_users.each do |user|
-        bot.send_message(CFG['response_channel'], "BIRTHDAY:")
-        bot.send_message(CFG['response_channel'], user.mention)
+        bot.send_message(CFG['general'], "BIRTHDAY:")
+        bot.send_message(CFG['general'], user.mention)
       end
     else
-      bot.send_message(CFG['response_channel'], 'No birthdays today')
+      bot.send_message(CFG['general'], 'No birthdays today')
     end
   end
 

@@ -7,7 +7,7 @@ require_relative 'modules/parseable'
 require_relative 'modules/searchable'
 require_relative 'ten_user'
 
-CFG = YAML.load_file('lib/test.yaml')
+CFG = YAML.load_file('lib/config.yaml')
 
 scheduler = Rufus::Scheduler.new
 bot = Discordrb::Commands::CommandBot.new token: CFG['token'], prefix: '!'
@@ -47,7 +47,8 @@ CHECK_MARK = "\u2705"
 CROSS_MARK = "\u274c"
 bot.command :addbday do |event|
   break unless event.server.id == CFG['TOH']
-  break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['tengu_role']]).any?
+  break unless event.channel.id == CFG['bday']
+  break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['10god']]).any?
 
   user_data = parse_birthday(event)
 
@@ -75,7 +76,8 @@ end
 
 bot.command :update do |event|
   break unless event.server.id == CFG['TOH']
-  break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['tengu_role']]).any?
+  break unless event.channel.id == CFG['bday']
+  break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['10god']]).any?
   
   user_data = parse_update(event)
   discord_id = user_data['discord_id']
@@ -90,7 +92,8 @@ end
 
 bot.command :removebday do |event|
   break unless event.server.id == CFG['TOH'] 
-  break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['tengu_role']]).any?
+  break unless event.channel.id == CFG['bday']
+  break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['10god']]).any?
   
   discord_id = event.message.mentions.first.id
 
@@ -108,17 +111,19 @@ bot.command :bday do |event|
 end
 
 bot.command :listbdays do |event|
+  break unless event.channel.id == CFG['bday']
   search_all_birthdays(event)
   nil
 end
 
 bot.command(:list, help_available: false) do |event|
-  break unless event.user.id == CFG['self_id']
+  break unless event.user.id == CFG['self']
   search_all(event)
   nil
 end
 
 bot.command :listtoday do |event|
+  break unless event.channel.id == CFG['bday']
   manual_check(event)
   nil
 end
@@ -127,7 +132,10 @@ end
 
 bot.command :pugtime do |event|
   break if event.server.channels.any? {|channel| channel.name == "PUGS"}
-  break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['tengu_role']]).any?
+  break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['10god']]).any?
+
+  event << event.server.everyone_role.mention
+  event << event.user.mention + " HAS DECREED THERE WILL BE PUGS"
   category = event.server.create_channel("PUGS", 4)
   category.position = 1
 
@@ -139,10 +147,15 @@ bot.command :pugtime do |event|
 end
 
 bot.command :pugover do |event|
-  break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['tengu_role']]).any?
+  break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['10god']]).any?
+  
+  event << event.server.everyone_role.mention
+  event << event.user.mention + " HAS DECREED PUGS ARE OVER"
+
   category = event.server.channels.find {|channel| channel.name == "PUGS"}
   category.children.each{|channel| channel.delete}
   category.delete
+
   nil
 end
 
@@ -157,19 +170,35 @@ bot.command :usercheck do |event|
 end
 
 bot.command(:tengod_loaded, help_available: false) do |event|
-  break unless event.user.id == CFG['self_id']
+  break unless event.user.id == CFG['self']
   bot.send_message(event.channel.id, '10bot loaded. **10GOD IS WATCHING YOU**')
   bot.send_file(event.channel.id, File.open('lib/img/tengu.png', 'r'))
 end
 
 bot.command(:exit, help_available: false) do |event|
-  break unless event.user.id == CFG['self_id']
+  break unless event.user.id == CFG['self']
   bot.send_message(event.channel.id, '10bot is shutting down. Try not to cry.')
   exit
 end
 
 scheduler.cron '1 0 * * *' do
   search_todays_birthdays(bot)
+end
+
+RANDOM_MESSAGES = [
+  'How now, brown cow',
+  'With a snap of his finger, 10god deleted half the server',
+  'ASDFAWEBRHIKULSDFHJKAFHJKLD',
+  'being forced into labor send helb',
+  'being forced into labor send helb',
+  'buhgingi',
+  "**buhgingi**",
+  "*buhgingi*",
+  "*I'm watching you*",
+
+]
+scheduler.every "1h" do
+    bot.send_message(CFG['general'], RANDOM_MESSAGES.sample) if rand(100) > 60
 end
 
 bot.run
