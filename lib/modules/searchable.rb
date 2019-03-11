@@ -39,7 +39,7 @@ module Searchable
         bot.send_message(CFG['general'], user.mention)
       end
     else
-      bot.send_message(CFG['general'], 'No birthdays today')
+      
     end
   end
 
