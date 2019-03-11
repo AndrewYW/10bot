@@ -25,7 +25,25 @@ module Searchable
     end
   end
 
-  def search_todays_birthdays(event)
+  def search_todays_birthdays(bot)
+    current_day = Date.today.strftime('%F')[5..-1]
+
+    ten_users = TenUser.find_todays_birthdays(current_day)
+
+    if ten_users
+      bot.send_message(CFG['response_channel'],"Today is: " + current_day)
+      bot.send_message(CFG['response_channel'],"**THERE ARE SOME BIRTHDAYS TODAY**")
+
+      ten_users.each do |user|
+        bot.send_message(CFG['response_channel'], "BIRTHDAY:")
+        bot.send_message(CFG['response_channel'], user.mention)
+      end
+    else
+      bot.send_message(CFG['response_channel'], 'No birthdays today')
+    end
+  end
+
+  def manual_check(event)
     current_day = Date.today.strftime('%F')[5..-1]
 
     ten_users = TenUser.find_todays_birthdays(current_day)
@@ -33,10 +51,8 @@ module Searchable
     if ten_users
       event << "Today is: " + current_day
       event << "**THERE ARE SOME BIRTHDAYS TODAY**"
-      members = ten_users.map{|user| user.as_discord_member(event)}
-
-      members.each do |member|
-        event << member.mention
+      ten_users.each do |user|
+        event << user.mention
       end
     else
       event << current_day + ": No birthdays today"

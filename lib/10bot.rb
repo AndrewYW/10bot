@@ -7,10 +7,10 @@ require_relative 'modules/parseable'
 require_relative 'modules/searchable'
 require_relative 'ten_user'
 
-CONFIG = YAML.load_file('lib/test.yaml')
+CFG = YAML.load_file('lib/test.yaml')
 
 scheduler = Rufus::Scheduler.new
-bot = Discordrb::Commands::CommandBot.new token: CONFIG['token'], prefix: '!'
+bot = Discordrb::Commands::CommandBot.new token: CFG['token'], prefix: '!'
 
 include Parseable
 include Searchable
@@ -34,16 +34,16 @@ bot.command :source do |event|
 end
 
 bot.command :dta do |event|
-  break unless event.server.id == CONFIG['TOH']
-  rand(2).zero? ? bot.emoji(CONFIG['tenguapproved']) : bot.emoji(CONFIG['tengudisapproved'])
+  break unless event.server.id == CFG['TOH']
+  rand(2).zero? ? bot.emoji(CFG['tenguapproved']) : bot.emoji(CFG['tengudisapproved'])
 end
 
 
 CHECK_MARK = "\u2705"
 CROSS_MARK = "\u274c"
 bot.command :addbday do |event|
-  break unless event.server.id == CONFIG['TOH']
-  break unless (role_ids(event) & [CONFIG['admin'], CONFIG['staff']]).any?
+  break unless event.server.id == CFG['TOH']
+  break unless (role_ids(event) & [CFG['admin'], CFG['staff']]).any?
 
   user_data = parse_birthday(event)
 
@@ -52,7 +52,7 @@ bot.command :addbday do |event|
   else
     ten_user = TenUser.new(user_data)
     if ten_user.create
-      message = event.respond(ten_user.mention(event) + " saved: #{ten_user.birthdate}")
+      message = event.respond(ten_user.mention + " saved: #{ten_user.birthdate}")
     else
       message = event.respond("Birthday saving error")
     end
@@ -70,18 +70,29 @@ bot.command :addbday do |event|
 end
 
 bot.command :update do |event|
-  break unless (role_ids(event) & [CONFIG['admin'], CONFIG['staff'], CONFIG['tengu_role']]).any?
-
-end
-
-bot.command :removebday do |event|
-  break unless event.server.id == CONFIG['TOH'] 
-  break unless (role_ids(event) & [CONFIG['admin'], CONFIG['staff'], CONFIG['tengu_role']]).any?
-  user_data = parse_birthday(event)
+  break unless event.server.id == CFG['TOH']
+  # break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['tengu_role']]).any?
+  
+  user_data = parse_update(event)
   discord_id = user_data['discord_id']
 
   if TenUser.exists?(discord_id)
+    TenUser.find_by_discord_id(discord_id).update(user_data)
+    message = event.respond("User updated")
+  else
+    message = event.respond("User not added yet")
+  end
+end
+
+bot.command :removebday do |event|
+  break unless event.server.id == CFG['TOH'] 
+  # break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['tengu_role']]).any?
+  
+  discord_id = event.message.mentions.first.id
+
+  if TenUser.exists?(discord_id)
     TenUser.find_by_discord_id(discord_id).delete
+    event << "User removed"
   else
     event << "User not found"
   end
@@ -98,13 +109,13 @@ bot.command :listbdays do |event|
 end
 
 bot.command(:list, help_available: false) do |event|
-  break unless event.user.id == CONFIG['self_id']
+  break unless event.user.id == CFG['self_id']
   search_all(event)
   nil
 end
 
 bot.command :listtoday do |event|
-  search_todays_birthdays(event)
+  manual_check(event)
   nil
 end
 
@@ -119,19 +130,19 @@ bot.command :usercheck do |event|
 end
 
 bot.command(:tengod_loaded, help_available: false) do |event|
-  break unless event.user.id == CONFIG['self_id']
+  break unless event.user.id == CFG['self_id']
   bot.send_message(event.channel.id, '10bot loaded. **10GOD IS WATCHING YOU**')
   bot.send_file(event.channel.id, File.open('lib/img/tengu.png', 'r'))
 end
 
 bot.command(:exit, help_available: false) do |event|
-  break unless event.user.id == CONFIG['self_id']
+  break unless event.user.id == CFG['self_id']
   bot.send_message(event.channel.id, '10bot is shutting down. Try not to cry.')
   exit
 end
 
 scheduler.cron '1 0 * * *' do
-  bot.send_message(CONFIG['response_channel'], 'testing scheduler')
+  search_todays_birthdays(bot)
 end
 
 bot.run

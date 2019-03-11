@@ -44,7 +44,7 @@ CREATE TABLE ten_users (
     discord_id TEXT NOT NULL UNIQUE,  --Discord id 
     username TEXT NOT NULL,         --NOT UNIQUE
     discriminator TEXT NOT NULL, --ALSO NOT UNIQUE
-    birthdate TEXT NOT NULL,   
+    birthdate TEXT,   
     twitch_url TEXT,       
     moderator INTEGER NOT NULL,
     administrator INTEGER NOT NULL

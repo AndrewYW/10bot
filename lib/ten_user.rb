@@ -125,10 +125,9 @@ class TenUser < ModelBase
     self
   end
 
-  def update
-    instance_attrs = attrs
-    set_line = instance_attrs.keys.map { |attr| "#{attr} = ?" }.join(", ")
-    values = instance_attrs.values
+  def update(data)
+    set_line = data.keys.map { |attr| "#{attr} = ?" }.join(", ")
+    values = data.values
 
     UsersDatabase.execute(<<-SQL, *values, discord_id: self.discord_id)
       UPDATE
@@ -170,12 +169,15 @@ class TenUser < ModelBase
 
   end
 
-  def as_discord_member(event)
-    event.server.member(discord_id)
-  end
+  # def as_discord_user(bot)
+  #   User.new({id: self.discord_id}, bot)
+  # end
+  # def as_discord_member(event)
+  #   event.server.member(discord_id)
+  # end
 
-  def mention(event)
-    as_discord_member(event).mention
+  def mention
+    "<@#{self.discord_id}>"
   end
 
   def birthday_info
