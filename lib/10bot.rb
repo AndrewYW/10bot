@@ -22,11 +22,15 @@ bot.command :usage do |event|
   event << "!bday [mention]: Checks birthday of mentioned user."
   event << "!listbdays: Lists birthdays."
   event << "!roles [mention]: Lists roles of user and their discord_id"
+  event << ""
   event << "**STAFF+ ONLY**"
   event << "!addbday [mention] [mm-dd]: Adds user to birthday table."
   event << "!update [mention] (mm-dd): Updates user in table."
   event << "If birthday is omitted, then it updates name/discriminator"
   event << "!removebday [mention]: Removes user from table."
+  event << ""
+  event << "!pugtime: Creates pug category and voice channels"
+  event << "!pugover: Deletes pug channels"
 end
 
 bot.command :source do |event|
@@ -43,7 +47,7 @@ CHECK_MARK = "\u2705"
 CROSS_MARK = "\u274c"
 bot.command :addbday do |event|
   break unless event.server.id == CFG['TOH']
-  break unless (role_ids(event) & [CFG['admin'], CFG['staff']]).any?
+  break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['tengu_role']]).any?
 
   user_data = parse_birthday(event)
 
@@ -71,7 +75,7 @@ end
 
 bot.command :update do |event|
   break unless event.server.id == CFG['TOH']
-  # break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['tengu_role']]).any?
+  break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['tengu_role']]).any?
   
   user_data = parse_update(event)
   discord_id = user_data['discord_id']
@@ -86,7 +90,7 @@ end
 
 bot.command :removebday do |event|
   break unless event.server.id == CFG['TOH'] 
-  # break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['tengu_role']]).any?
+  break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['tengu_role']]).any?
   
   discord_id = event.message.mentions.first.id
 
@@ -122,6 +126,8 @@ end
 # PUGS
 
 bot.command :pugtime do |event|
+  break if event.server.channels.any? {|channel| channel.name == "PUGS"}
+  break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['tengu_role']]).any?
   category = event.server.create_channel("PUGS", 4)
   category.position = 1
 
@@ -133,6 +139,7 @@ bot.command :pugtime do |event|
 end
 
 bot.command :pugover do |event|
+  break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['tengu_role']]).any?
   category = event.server.channels.find {|channel| channel.name == "PUGS"}
   category.children.each{|channel| channel.delete}
   category.delete
