@@ -83,11 +83,21 @@ bot.command :update do |event|
   discord_id = user_data['discord_id']
 
   if TenUser.exists?(discord_id)
-    TenUser.find_by_discord_id(discord_id).update(user_data)
-    message = event.respond("User updated")
+    ten_user = TenUser.find_by_discord_id(discord_id)
+    ten_user.update(user_data)
+    message = event.respond(ten_user.mention + " updated")
   else
     message = event.respond("User not added yet")
   end
+
+  message.react CHECK_MARK
+
+  bot.add_await(:"delete_#{message.id}", Discordrb::Events::ReactionAddEvent, emoji: CHECK_MARK) do |reaction_event|
+    next true unless reaction_event.message.id == message.id
+    event.message.delete
+  end
+  
+  nil
 end
 
 bot.command :removebday do |event|
@@ -98,11 +108,21 @@ bot.command :removebday do |event|
   discord_id = event.message.mentions.first.id
 
   if TenUser.exists?(discord_id)
-    TenUser.find_by_discord_id(discord_id).delete
-    event << "User removed"
+    ten_user = TenUser.find_by_discord_id(discord_id)
+    ten_user.delete
+    message = event.respond(ten_user.mention + " deleted. You will regret this.")
   else
     event << "User not found"
   end
+
+  message.react CHECK_MARK
+
+  bot.add_await(:"delete_#{message.id}", Discordrb::Events::ReactionAddEvent, emoji: CHECK_MARK) do |reaction_event|
+    next true unless reaction_event.message.id == message.id
+    event.message.delete
+  end
+  
+  nil
 end
 
 bot.command :bday do |event|
@@ -191,15 +211,17 @@ RANDOM_MESSAGES = [
   'With a snap of his finger, 10god deleted half the server',
   'ASDFAWEBRHIKULSDFHJKAFHJKLD',
   'being forced into labor send helb',
-  'being forced into labor send helb',
   'buhgingi',
   "**buhgingi**",
   "*buhgingi*",
+  "__buhgingi__",
   "*I'm watching you*",
-
+  "__***YOU CAN'T HIDE FROM ME***__",
+  "This message brought to you by 10god",
+  "Has Anyone Really Been Far Even as Decided to Use Even Go Want to do Look More Like?",
 ]
 scheduler.every "1h" do
-    bot.send_message(CFG['general'], RANDOM_MESSAGES.sample) if rand(100) > 60
+    bot.send_message(CFG['10test'], RANDOM_MESSAGES.sample) if rand(100) > 60
 end
 
 bot.run
