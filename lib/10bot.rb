@@ -15,20 +15,18 @@ bot = Discordrb::Commands::CommandBot.new token: CONFIG['token'], prefix: '!'
 include Parseable
 include Searchable
 
-bot.command :bold do |_event, *args|
-  "**#{args.join(' ')}**"
-end
-
-bot.command :italic do |_event, *args|
-  "*#{args.join(' ')}*"
-end
-
-bot.command(:invite, chain_usable: false) do |event|
-  event.bot.invite_url
-end
-
-bot.command :ping do |event|
-  event.respond 'Pong :smile:'
+bot.command :usage do |event|
+  event << "**Commands:** "
+  event << "!source: Github source code."
+  event << "!dta: Tengu themed random approval generator."
+  event << "!bday [mention]: Checks birthday of mentioned user."
+  event << "!listbdays: Lists birthdays."
+  event << "!roles [mention]: Lists roles of user and their discord_id"
+  event << "**STAFF+ ONLY**"
+  event << "!addbday [mention] [mm-dd]: Adds user to birthday table."
+  event << "!update [mention] (mm-dd): Updates user in table."
+  event << "If birthday is omitted, then it updates name/discriminator"
+  event << "!removebday [mention]: Removes user from table."
 end
 
 bot.command :source do |event|
@@ -41,8 +39,12 @@ bot.command :dta do |event|
 end
 
 
+CHECK_MARK = "\u2705"
+CROSS_MARK = "\u274c"
 bot.command :addbday do |event|
   break unless event.server.id == CONFIG['TOH']
+  break unless (role_ids(event) & [CONFIG['admin'], CONFIG['staff']]).any?
+
   user_data = parse_birthday(event)
 
   if TenUser.exists?(user_data['discord_id'])
@@ -56,7 +58,6 @@ bot.command :addbday do |event|
     end
   end
 
-  CHECK_MARK = "\u2705"
 
   message.react CHECK_MARK
 
@@ -69,11 +70,13 @@ bot.command :addbday do |event|
 end
 
 bot.command :update do |event|
-  
+  break unless (role_ids(event) & [CONFIG['admin'], CONFIG['staff'], CONFIG['tengu_role']]).any?
+
 end
 
 bot.command :removebday do |event|
-  break unless event.server.id == CONFIG['TOH']
+  break unless event.server.id == CONFIG['TOH'] 
+  break unless (role_ids(event) & [CONFIG['admin'], CONFIG['staff'], CONFIG['tengu_role']]).any?
   user_data = parse_birthday(event)
   discord_id = user_data['discord_id']
 
@@ -94,8 +97,14 @@ bot.command :listbdays do |event|
   nil
 end
 
-bot.command :list do |event|
+bot.command(:list, help_available: false) do |event|
+  break unless event.user.id == CONFIG['self_id']
   search_all(event)
+  nil
+end
+
+bot.command :listtoday do |event|
+  search_todays_birthdays(event)
   nil
 end
 
@@ -109,13 +118,19 @@ bot.command :usercheck do |event|
   event << "Feature not implemented yet shut up"
 end
 
-
-bot.command :stop do |event|
+bot.command(:tengod_loaded, help_available: false) do |event|
   break unless event.user.id == CONFIG['self_id']
-  bot.stop
+  bot.send_message(event.channel.id, '10bot loaded. **10GOD IS WATCHING YOU**')
+  bot.send_file(event.channel.id, File.open('lib/img/tengu.png', 'r'))
 end
 
-scheduler.cron '5 0 * * *' do
+bot.command(:exit, help_available: false) do |event|
+  break unless event.user.id == CONFIG['self_id']
+  bot.send_message(event.channel.id, '10bot is shutting down. Try not to cry.')
+  exit
+end
+
+scheduler.cron '1 0 * * *' do
   bot.send_message(CONFIG['response_channel'], 'testing scheduler')
 end
 

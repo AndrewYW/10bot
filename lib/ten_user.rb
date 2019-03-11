@@ -170,10 +170,6 @@ class TenUser < ModelBase
 
   end
 
-  def as_discord_user
-    
-  end
-
   def as_discord_member(event)
     event.server.member(discord_id)
   end

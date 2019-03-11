@@ -31,9 +31,19 @@ module Searchable
     ten_users = TenUser.find_todays_birthdays(current_day)
 
     if ten_users
-      ten_users.map{|user| TenUser.as_discord_member(event)}
+      event << "Today is: " + current_day
+      event << "**THERE ARE SOME BIRTHDAYS TODAY**"
+      members = ten_users.map{|user| user.as_discord_member(event)}
+
+      members.each do |member|
+        event << member.mention
+      end
     else
       event << current_day + ": No birthdays today"
     end
+  end
+
+  def role_ids(event)
+    event.user.roles.map {|role| role.id}
   end
 end
