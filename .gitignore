@@ -1,5 +1,5 @@
 config.yaml
 test.yaml
 seed_db.sql
-
+data/10bot.db
 .DS_Store
