@@ -4,7 +4,6 @@ require 'sqlite3'
 class UsersDatabase < SQLite3::Database
   include Singleton
 
-  SETUP_FILE = File.join(File.dirname(__FILE__), '../setup_db.sh')
   DB_FILE = File.join(File.dirname(__FILE__), '../data/10bot.db')
 
   def self.open
@@ -14,18 +13,8 @@ class UsersDatabase < SQLite3::Database
   end
 
   def self.instance
-    reset! if @database.nil?
+    UsersDatabase.open if @database.nil?
     @database
-  end 
-  
-  def self.reset!
-    commands = [
-      "rm '#{DB_FILE}'",
-      "`#{SETUP_FILE}`"
-    ]
-    
-    commands.each {|command| `#{command}` }
-    UsersDatabase.open
   end 
 
   def self.execute(*args)

@@ -25,4 +25,15 @@ module Searchable
     end
   end
 
+  def search_todays_birthdays(event)
+    current_day = Date.today.strftime('%F')[5..-1]
+
+    ten_users = TenUser.find_todays_birthdays(current_day)
+
+    if ten_users
+      ten_users.map{|user| TenUser.as_discord_member(event)}
+    else
+      event << current_day + ": No birthdays today"
+    end
+  end
 end

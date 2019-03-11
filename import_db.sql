@@ -41,7 +41,7 @@ PRAGMA foreign_keys = ON;
 
 CREATE TABLE ten_users (
     id INTEGER PRIMARY KEY,
-    discord_id TEXT NOT NULL,       --Discord id 
+    discord_id TEXT NOT NULL UNIQUE,  --Discord id 
     username TEXT NOT NULL,         --NOT UNIQUE
     discriminator TEXT NOT NULL, --ALSO NOT UNIQUE
     birthdate TEXT NOT NULL,   

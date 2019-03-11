@@ -16,7 +16,6 @@ include Parseable
 include Searchable
 
 bot.command :bold do |_event, *args|
-  # Again, the return value of the block is sent to the channel
   "**#{args.join(' ')}**"
 end
 
@@ -25,8 +24,6 @@ bot.command :italic do |_event, *args|
 end
 
 bot.command(:invite, chain_usable: false) do |event|
-  # This simply sends the bot's invite URL, without any specific permissions,
-  # to the channel.
   event.bot.invite_url
 end
 
@@ -65,10 +62,26 @@ bot.command :addbday do |event|
 
   bot.add_await(:"delete_#{message.id}", Discordrb::Events::ReactionAddEvent, emoji: CHECK_MARK) do |reaction_event|
     next true unless reaction_event.message.id == message.id
-    message.delete
+    event.message.delete
   end
   
   nil
+end
+
+bot.command :update do |event|
+  
+end
+
+bot.command :removebday do |event|
+  break unless event.server.id == CONFIG['TOH']
+  user_data = parse_birthday(event)
+  discord_id = user_data['discord_id']
+
+  if TenUser.exists?(discord_id)
+    TenUser.find_by_discord_id(discord_id).delete
+  else
+    event << "User not found"
+  end
 end
 
 bot.command :bday do |event|
@@ -96,12 +109,6 @@ bot.command :usercheck do |event|
   event << "Feature not implemented yet shut up"
 end
 
-bot.command :restart do |event|
-  break unless event.user.id == CONFIG['self_id']
-  bot.stop
-  sleep 3
-  bot.run
-end
 
 bot.command :stop do |event|
   break unless event.user.id == CONFIG['self_id']

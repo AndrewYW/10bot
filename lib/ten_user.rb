@@ -47,9 +47,7 @@ class TenUser < ModelBase
     user_data.map{|user| TenUser.new(user)}
   end
 
-  def self.find_todays_birthdays
-    current_day = Date.today.strftime('%F')[5..-1]
-
+  def self.find_todays_birthdays(current_day)
     user_data = UsersDatabase.execute(<<-SQL, current_day: current_day)
       SELECT
         ten_users.*
@@ -125,6 +123,34 @@ class TenUser < ModelBase
 
     @id = UsersDatabase.last_insert_row_id
     self
+  end
+
+  def update
+    instance_attrs = attrs
+    set_line = instance_attrs.keys.map { |attr| "#{attr} = ?" }.join(", ")
+    values = instance_attrs.values
+
+    UsersDatabase.execute(<<-SQL, *values, discord_id: self.discord_id)
+      UPDATE
+        ten_users
+      SET
+        #{set_line}
+      WHERE
+        ten_users.discord_id = :discord_id
+    SQL
+
+    self
+  end
+
+  def delete
+    UsersDatabase.execute(<<-SQL, discord_id: self.discord_id)
+      DELETE FROM
+        ten_users
+      WHERE 
+        ten_users.discord_id = :discord_id
+    SQL
+
+    nil
   end
 
   def is_mod?

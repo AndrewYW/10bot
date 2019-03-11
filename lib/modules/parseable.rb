@@ -25,4 +25,15 @@ module Parseable
     end
   end
 
+  def parse_update(event)
+    if event.content.split(" ").length == 3
+
+    elsif event.content.split(" ").length == 2
+
+    end
+  end
+
+  def is_staff(event)
+
+  end
 end
