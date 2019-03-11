@@ -2,7 +2,33 @@
 
 USING WHAT I LEARNED TO REDO WHAT I DID
 
-# TODO
+## 10bot v1.0
+
+10bot is a custom Discord server management bot written for a friend.
+It uses the discordrb API wrapper and sqlite3 for database management.
+Since this is a custom Discord bot, implementation is actively managed by me,
+and support for installation for other servers is not available.
+
+### Features
+
++ Birthday management
+  + 10bot tracks user entered birthdays, and makes an announcement the day of.
++ PUG channel management
+  + 10bot creates custom voice channels for Overwatch Pickup games.
++ A host of other dumb, but maybe useful features.
+
++ More features in the horizon...
+
+### Dependencies
+
+10bot uses several thingamabobs:
+
++ [discordrb](https://github.com/meew0/discordrb): Discord API wrapper in Ruby. 
++ [rufus-scheduler](https://github.com/jmettraux/rufus-scheduler): Job scheduler for Ruby, supporting at, cron, in, and every jobs.
++ [dry-inflector](https://github.com/dry-rb/dry-inflector): Inflector gem for Ruby
++ [sqlite3](https://github.com/sparklemotion/sqlite3-ruby): Ruby interface for SQLite3
+
+<!-- # TODO
 
 ## 10bot v0.1
 
@@ -58,4 +84,4 @@ This is just what comes to mind - not sure if there are/will be any usability is
 
 
 - Can you have 10bot run starboard?
-- Can 10bot also track birthdays + announce birthdays? Maybe !addbirthday !removebirthday !listbirthdays
+- Can 10bot also track birthdays + announce birthdays? Maybe !addbirthday !removebirthday !listbirthdays -->
