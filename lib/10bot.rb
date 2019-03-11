@@ -129,12 +129,12 @@ bot.command :listtoday do |event|
 end
 
 # PUGS
-
 bot.command :pugtime do |event|
   break if event.server.channels.any? {|channel| channel.name == "PUGS"}
   break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['10god']]).any?
 
-  event << event.server.everyone_role.mention
+  pug_role = event.server.roles.find {|role| role.id == CFG['pug']}
+  event << pug_role.mention
   event << event.user.mention + " HAS DECREED THERE WILL BE PUGS"
   category = event.server.create_channel("PUGS", 4)
   category.position = 1
@@ -149,7 +149,8 @@ end
 bot.command :pugover do |event|
   break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['10god']]).any?
   
-  event << event.server.everyone_role.mention
+  pug_role = event.server.roles.find {|role| role.id == CFG['pug']}
+  event << pug_role.mention
   event << event.user.mention + " HAS DECREED PUGS ARE OVER"
 
   category = event.server.channels.find {|channel| channel.name == "PUGS"}
