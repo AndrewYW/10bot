@@ -40,7 +40,47 @@ end
 
 bot.command :dta do |event|
   break unless event.server.id == CFG['TOH']
-  rand(2).zero? ? bot.emoji(CFG['tenguapproved']) : bot.emoji(CFG['tengudisapproved'])
+
+  case rand(100)
+  when 0
+    bot.send_file(event.channel.id, File.open('lib/img/sodumb.png', 'r'))
+  when 1
+    bot.emoji(CFG['tengudispleased'])
+  when 2..50
+    bot.emoji(CFG['tenguapproved'])
+  else
+    bot.emoji(CFG['tengudisapproved'])
+  end
+
+end
+
+
+# bot.command :tenball do |event|
+#   8ball = [
+#   "It is certain.",
+#   "It is decidedly so.",
+#   "Without a doubt.",
+#   "Signs point to yes.",
+#   ]
+#   event << 8ball.sample
+# end
+
+bot.command :buhgingi do |event|
+  buhgingis = [
+    "buhgingi",
+    "*buhgingi*",
+    "**buhgingi**",
+    "__buhgingi__",
+    "__*buhgingi*__",
+    "__**buhgingi**__",
+  ]
+  event << buhgingis.sample
+
+end
+
+bot.command :sodumb do |event|
+  bot.send_message(event.channel.id, 'so dumb')
+  bot.send_file(event.channel.id, File.open('lib/img/sodumb.png', 'r'))
 end
 
 
@@ -65,10 +105,10 @@ bot.command :addbday do |event|
   end
 
 
-  message.react CHECK_MARK
+  event.message.react CHECK_MARK
 
-  bot.add_await(:"delete_#{message.id}", Discordrb::Events::ReactionAddEvent, emoji: CHECK_MARK) do |reaction_event|
-    next true unless reaction_event.message.id == message.id
+  bot.add_await(:"delete_#{event.message.id}", Discordrb::Events::ReactionAddEvent, emoji: CHECK_MARK) do |reaction_event|
+    next true unless reaction_event.message.id == event.message.id
     event.message.delete
   end
   
@@ -91,10 +131,10 @@ bot.command :update do |event|
     message = event.respond("User not added yet")
   end
 
-  message.react CHECK_MARK
+  event.message.react CHECK_MARK
 
-  bot.add_await(:"delete_#{message.id}", Discordrb::Events::ReactionAddEvent, emoji: CHECK_MARK) do |reaction_event|
-    next true unless reaction_event.message.id == message.id
+  bot.add_await(:"delete_#{event.message.id}", Discordrb::Events::ReactionAddEvent, emoji: CHECK_MARK) do |reaction_event|
+    next true unless reaction_event.message.id == event.message.id
     event.message.delete
   end
   
@@ -116,10 +156,10 @@ bot.command :removebday do |event|
     event << "User not found"
   end
 
-  message.react CHECK_MARK
+  event.message.react CHECK_MARK
 
-  bot.add_await(:"delete_#{message.id}", Discordrb::Events::ReactionAddEvent, emoji: CHECK_MARK) do |reaction_event|
-    next true unless reaction_event.message.id == message.id
+  bot.add_await(:"delete_#{event.message.id}", Discordrb::Events::ReactionAddEvent, emoji: CHECK_MARK) do |reaction_event|
+    next true unless reaction_event.message.id == event.message.id
     event.message.delete
   end
   
@@ -132,7 +172,7 @@ bot.command :bday do |event|
 end
 
 bot.command :listbdays do |event|
-  break unless event.channel.id == CFG['bday']
+  break unless event.server.id == CFG['TOH']
   search_all_birthdays(event)
   nil
 end
@@ -145,6 +185,7 @@ end
 
 bot.command :listtoday do |event|
   break unless event.channel.id == CFG['bday']
+  break unless (role_ids(event) & [CFG['admin'], CFG['staff'], CFG['10god']]).any?
   manual_check(event)
   nil
 end
@@ -185,7 +226,7 @@ bot.command(:exit, help_available: false) do |event|
   exit
 end
 
-scheduler.cron '1 0 * * *' do
+scheduler.cron '1 0 * * * America/Chicago' do
   search_todays_birthdays(bot)
 end
 
@@ -204,7 +245,7 @@ RANDOM_MESSAGES = [
   "Has Anyone Really Been Far Even as Decided to Use Even Go Want to do Look More Like?",
 ]
 scheduler.every "1h" do
-    bot.send_message(CFG['10test'], RANDOM_MESSAGES.sample) if rand(100) > 60
+    #bot.send_message(CFG['10test'], RANDOM_MESSAGES.sample) if rand(100) > 60
 end
 
 bot.run

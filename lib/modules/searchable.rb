@@ -30,7 +30,7 @@ module Searchable
 
     ten_users = TenUser.find_todays_birthdays(current_day)
 
-    if ten_users
+    unless ten_users.empty?
       bot.send_message(CFG['general'],"Today is: " + current_day)
       bot.send_message(CFG['general'],"**THERE ARE SOME BIRTHDAYS TODAY**")
 
@@ -48,7 +48,7 @@ module Searchable
 
     ten_users = TenUser.find_todays_birthdays(current_day)
 
-    if ten_users
+    unless ten_users.empty?
       event << "Today is: " + current_day
       event << "**THERE ARE SOME BIRTHDAYS TODAY**"
       ten_users.each do |user|

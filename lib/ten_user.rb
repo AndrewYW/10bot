@@ -41,7 +41,7 @@ class TenUser < ModelBase
       FROM
         ten_users
       ORDER BY
-        ten_users.username
+        ten_users.birthdate
     SQL
 
     user_data.map{|user| TenUser.new(user)}
