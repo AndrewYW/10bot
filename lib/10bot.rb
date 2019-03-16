@@ -15,6 +15,7 @@ bot = Discordrb::Commands::CommandBot.new token: CFG['token'], prefix: '!'
 
 include Parseable
 include Searchable
+include Puggable
 
 bot.command :usage do |event|
   event << "**Commands:** "
