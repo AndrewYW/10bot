@@ -47,7 +47,9 @@ bot.command :dta do |event|
     bot.send_file(event.channel.id, File.open('lib/img/sodumb.png', 'r'))
   when 1
     bot.emoji(CFG['tengudispleased'])
-  when 2..50
+  when 2
+    bot.send_file(event.channel.id, File.open('lib/img/10bot.jpg', 'r'))
+  when 3..50
     bot.emoji(CFG['tenguapproved'])
   else
     bot.emoji(CFG['tengudisapproved'])
@@ -56,15 +58,31 @@ bot.command :dta do |event|
 end
 
 
-# bot.command :tenball do |event|
-#   8ball = [
-#   "It is certain.",
-#   "It is decidedly so.",
-#   "Without a doubt.",
-#   "Signs point to yes.",
-#   ]
-#   event << 8ball.sample
-# end
+bot.command :tenball do |event|
+  answers = [
+  "It is certain.",
+  "It is decidedly so.",
+  "Without a doubt.",
+  "Signs point to yes.",
+  "Yes - definitely.",
+  "You may rely on it.",
+  "As I see it, yes.",
+  "Most likely.",
+  "Outlook good.",
+  "Yes.",
+  "Reply hazy, try again",
+  "Ask again later.",
+  "Better not tell you now.",
+  "Cannot predict now.",
+  "Concentrate and ask again.",
+  "Don't count on it.",
+  "My reply is no.",
+  "My sources say no.",
+  "Outlook not so good.",
+  "Very doubtful.",
+  ]
+  event << answers.sample
+end
 
 bot.command :buhgingi do |event|
   buhgingis = [
@@ -84,6 +102,14 @@ bot.command :sodumb do |event|
   bot.send_file(event.channel.id, File.open('lib/img/sodumb.png', 'r'))
 end
 
+bot.command :no do |event|
+  bot.send_message(event.channel.id, 'no')
+  bot.send_file(event.channel.id, File.open('lib/img/no.png', 'r'))
+end
+
+bot.command :tengu do |event|
+  bot.send_file(event.channel.id, File.open('lib/img/10bot.jpg','r'))
+end
 
 CHECK_MARK = "\u2705"
 CROSS_MARK = "\u274c"
